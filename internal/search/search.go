@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	text    = []rune("가깋닣딯띻맇밓빟삫싷앃잏짛찧칳킿팋핗힣")
+	text    = []rune("가깋낗닣딯띻맇밓빟삫싷앃잏짛찧칳킿팋핗힣")
 	jamo    = []rune("ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ")
 	overlay = []rune("ㄳㄵㄶㄺㄻㄼㄽㄾㄿㅀㅄ")
 )
@@ -24,6 +24,7 @@ func SearchKo(s string) string {
 	origin = []rune(s)
 	target = origin[len(origin)-1]
 
+	search.WriteByte('^')
 	search.WriteString(string(origin[:len(origin)-1]))
 
 	if !((target >= 12593 && target <= 12622) || (target >= 44032 && target <= 55203)) {
@@ -36,6 +37,7 @@ func SearchKo(s string) string {
 			if target == r {
 				isOverlay = true
 				search.WriteRune(target)
+				break
 			}
 		}
 
@@ -45,21 +47,23 @@ func SearchKo(s string) string {
 					search.WriteString("(")
 					search.WriteRune(target)
 					search.WriteString("|[")
-					search.WriteRune(text[i] - diff + 1)
+					search.WriteRune(text[i+1] - diff + 1)
 					search.WriteString("-")
-					search.WriteRune(text[i])
+					search.WriteRune(text[i+1])
 					search.WriteString("])")
+					break
 				}
 			}
 		}
 	} else {
 		for i, r := range text {
-			if target > r && target <= text[i+1] {
+			if target >= r && target <= text[i+1] {
 				search.WriteString("[")
 				search.WriteRune(target)
 				search.WriteString("-")
 				search.WriteRune(text[i+1])
 				search.WriteString("]")
+				break
 			}
 		}
 	}
