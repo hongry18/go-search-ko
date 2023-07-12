@@ -1,8 +1,7 @@
 package search
 
 import (
-	"fmt"
-	"strings"
+	"bytes"
 )
 
 var (
@@ -18,13 +17,14 @@ const (
 func SearchKo(s string) string {
 	var (
 		target rune
-		search string
+		search bytes.Buffer
 		origin []rune
 	)
 
 	origin = []rune(s)
 	target = origin[len(origin)-1]
-	origin = origin[:len(origin)-1]
+
+	search.WriteString(string(origin[:len(origin)-1]))
 
 	if !((target >= 12593 && target <= 12622) || (target >= 44032 && target <= 55203)) {
 		return s
@@ -35,24 +35,34 @@ func SearchKo(s string) string {
 		for _, r := range overlay {
 			if target == r {
 				isOverlay = true
-				search = string(target)
+				search.WriteRune(target)
 			}
 		}
 
 		if !isOverlay {
 			for i, r := range jamo {
 				if target == r {
-					search = fmt.Sprintf("(%c|[%c-%c])", target, text[i]-diff+1, text[i])
+					search.WriteString("(")
+					search.WriteRune(target)
+					search.WriteString("|[")
+					search.WriteRune(text[i] - diff + 1)
+					search.WriteString("-")
+					search.WriteRune(text[i])
+					search.WriteString("])")
 				}
 			}
 		}
 	} else {
 		for i, r := range text {
 			if target > r && target <= text[i+1] {
-				search = fmt.Sprintf("[%c-%c]", target, text[i+1])
+				search.WriteString("[")
+				search.WriteRune(target)
+				search.WriteString("-")
+				search.WriteRune(text[i+1])
+				search.WriteString("]")
 			}
 		}
 	}
 
-	return strings.Join([]string{string(origin), search}, "")
+	return search.String()
 }
