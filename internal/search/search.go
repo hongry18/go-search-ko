@@ -24,7 +24,7 @@ func SearchKo(s string) string {
 	search.WriteString(string(origin[:len(origin)-1]))
 
 	if !((target >= 12593 && target <= 12622) || (target >= 44032 && target <= 55203)) {
-		return s
+		return search.String()
 	}
 
 	if target >= 44032 && target <= 55203 {
